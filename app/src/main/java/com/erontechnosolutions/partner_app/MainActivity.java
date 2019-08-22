@@ -1,5 +1,6 @@
 package com.erontechnosolutions.partner_app;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,13 +25,31 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -39,18 +59,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import Model.Vehicle_User;
 
 public class MainActivity extends AppCompatActivity {
     ImageView driverimage;
     ImageButton dr_btn;
     private static final int Gallery_slection_code = 100;
     private static final int Camera_slection_code = 200;
-    ImageView imageView;
+    ImageView imageView,imageView2;
     private String cameraFilePath;
     LinearLayout basic, vehicle, rc, driver, dp;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
 
     Button previous, next;
+    Bitmap thumbnail;
+    Button dpupload;
 
     AlertDialog alertDailog;
     boolean basciboolean = false;
@@ -61,6 +87,25 @@ public class MainActivity extends AppCompatActivity {
     ImageButton rc_btn;
     LinearLayout rchorizontallayout;
     public String userChoosenTask;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    private Uri filePath;
+    ByteArrayOutputStream bytes;
+    byte[] data1;
+    ImageView dps;
+    EditText name,mobile_number,emailid,address,vehicle_no,vehicle_make,model,yor;
+    Button submit;
+    String names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages;
+    String userID;
+    DatabaseReference databaseReference;
+    FirebaseDatabase firebaseDatabase;
+    List<Vehicle_User>vehicle_users;
+    int id;
+    boolean rcfile,driverfile,dpfile;
+
+
+
+
 
 
     @Override
@@ -74,9 +119,27 @@ public class MainActivity extends AppCompatActivity {
         dp = findViewById(R.id.dp_layout);
         rc_btn = findViewById(R.id.rc_btn);
         rchorizontallayout = findViewById(R.id.rc);
-        imageView = findViewById(R.id.rc_image);
+        imageView = findViewById(R.id.rc_image1);
+        imageView2= findViewById(R.id.rc_image2);
         driverimage=findViewById(R.id.driverimage);
         dr_btn=findViewById(R.id.dr_btn);
+        dpupload=findViewById(R.id.dpupload);
+        dps=findViewById(R.id.dp);
+        name=findViewById(R.id.nameedt);
+        mobile_number=findViewById(R.id.mobileedt);
+        emailid=findViewById(R.id.emailedt);
+        address=findViewById(R.id.addressedt);
+        vehicle_no=findViewById(R.id.vehicle_no_edt);
+        vehicle_make=findViewById(R.id.vehicle_make_edt);
+        model=findViewById(R.id.vehicle_model_edt);
+        yor=findViewById(R.id.vehicle_yor_edt);
+        submit=findViewById(R.id.submit);
+
+
+
+        storage=FirebaseStorage.getInstance();
+        storageReference=storage.getReference();
+
 
 
         previous = findViewById(R.id.previous_common);
@@ -92,10 +155,15 @@ public class MainActivity extends AppCompatActivity {
         driverboolean = false;
         dpboolean = false;
 
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("vehicle_user");
+
+
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
 
                 if (basciboolean) {
 
@@ -139,15 +207,30 @@ public class MainActivity extends AppCompatActivity {
                     driverboolean = true;
                     dpboolean = false;
 
-                    rc_btn.setOnClickListener(new View.OnClickListener() {
+                    imageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
+                           // rcimagepic();
+
+                            rcfile=true;
 
                             selectImage();
-
                         }
                     });
+
+                    imageView2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            // rcimagepic();
+
+                            rcfile=true;
+
+                            selectImage();
+                        }
+                    });
+
 
                 } else if (driverboolean) {
                     previous.setVisibility(View.VISIBLE);
@@ -165,15 +248,22 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
 
+                            driverfile=true;
+
 
                             selectImage();
 
+
+
                         }
+
                     });
+
 
                 } else if (dpboolean) {
                     previous.setVisibility(View.VISIBLE);
-                    next.setText("Submit");
+                    next.setVisibility(View.GONE);
+                    submit.setVisibility(View.VISIBLE);
                     basic.setVisibility(View.GONE);
                     vehicle.setVisibility(View.GONE);
                     rc.setVisibility(View.GONE);
@@ -184,6 +274,65 @@ public class MainActivity extends AppCompatActivity {
                     rcboolean = false;
                     driverboolean = false;
                     dpboolean = false;
+
+                    dpupload.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            dpfile=true;
+                            selectImage();
+
+
+
+                        }
+                    });
+
+                    submit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            names=name.getText().toString();
+                            mobilenos=mobile_number.getText().toString();
+                            emailds=emailid.getText().toString();
+                            addresss=address.getText().toString();
+                            vnos=vehicle_no.getText().toString();
+                            vms=vehicle_make.getText().toString();
+                            vmos=model.getText().toString();
+                            yors=yor.getText().toString();
+
+
+                            if(!TextUtils.isEmpty(names)){
+
+                                userID=databaseReference.push().getKey();
+                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors);
+                                databaseReference.child(userID).setValue(vehicle_user);
+                                upLoadFileImage();
+                                upLoadImage();
+
+                                name.setText("");
+                                mobile_number.setText("");
+                                emailid.setText("");
+                                address.setText("");
+                                vehicle_no.setText("");
+                                vehicle_make.setText("");
+                                model.setText("");
+                                yor.setText("");
+
+                                imageView.setImageResource(R.drawable.placeholder);
+                                imageView2.setImageResource(R.drawable.placeholder);
+                                dps.setImageResource(R.drawable.placeholder);
+                                driverimage.setImageResource(R.drawable.placeholder);
+                                Toast.makeText(MainActivity.this, "Successfully added", Toast.LENGTH_SHORT).show();
+
+                               // createUser(names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages);
+                            }else{
+                                Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+
+
                 }
 
             }
@@ -192,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                vehicleboolean = true;
+               dpboolean = true;
 
                 if (basciboolean) {
 
@@ -211,8 +360,9 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (vehicleboolean) {
 
-                    previous.setVisibility(View.VISIBLE);
-                    next.setText("Next");
+                    previous.setVisibility(View.INVISIBLE);
+                    next.setVisibility(View.VISIBLE);
+                    submit.setVisibility(View.GONE);
                     basic.setVisibility(View.VISIBLE);
                     vehicle.setVisibility(View.GONE);
                     rc.setVisibility(View.GONE);
@@ -242,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (driverboolean) {
                     previous.setVisibility(View.VISIBLE);
                     next.setText("Next");
+
                     basic.setVisibility(View.GONE);
                     vehicle.setVisibility(View.GONE);
                     rc.setVisibility(View.VISIBLE);
@@ -255,7 +406,8 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (dpboolean) {
                     previous.setVisibility(View.VISIBLE);
-                    next.setText("Submit");
+                    next.setVisibility(View.GONE);
+                    submit.setVisibility(View.VISIBLE);
                     basic.setVisibility(View.GONE);
                     vehicle.setVisibility(View.GONE);
                     rc.setVisibility(View.GONE);
@@ -263,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
                     dp.setVisibility(View.GONE);
                     basciboolean = false;
                     vehicleboolean = false;
-                    rcboolean = false;
+                    rcboolean = true;
                     driverboolean = true;
                     dpboolean = false;
 
@@ -275,84 +427,33 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-
     }
-
-    private void selectImage() {
-        final CharSequence[] items = {"Take Photo", "Choose from Library",
-                "Cancel"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Add Photo!");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                boolean result = Utility.checkPermission(MainActivity.this);
-                if (items[item].equals("Take Photo")) {
-                    userChoosenTask = "Take Photo";
-                    if (result)
-                        cameraIntent();
-                } else if (items[item].equals("Choose from Library")) {
-                    userChoosenTask = "Choose from Library";
-                    if (result)
-                        galleryIntent();
-                } else if (items[item].equals("Cancel")) {
-                    dialog.dismiss();
-                }
+            private void selectImage() {
+                final CharSequence[] items = {"Take Photo", "Choose from Library",
+                        "Cancel"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Add Photo!");
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        boolean result = Utility.checkPermission(MainActivity.this);
+                        if (items[item].equals("Take Photo")) {
+                            userChoosenTask = "Take Photo";
+                            if (result)
+                                cameraIntent();
+                        } else if (items[item].equals("Choose from Library")) {
+                            userChoosenTask = "Choose from Library";
+                            if (result)
+                                galleryIntent();
+                        } else if (items[item].equals("Cancel")) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                builder.show();
             }
-        });
-        builder.show();
-    }
 
-   /* private void selectImage1() {
-        final CharSequence[] items = {"Take Photo", "Choose from Library",
-                "Cancel"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Add Photo!");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                boolean result = Utility.checkPermission(MainActivity.this);
-                if (items[item].equals("Take Photo")) {
-                    userChoosenTask = "Take Photo";
-                    if (result)
-                        cameraIntent();
-                } else if (items[item].equals("Choose from Library")) {
-                    userChoosenTask = "Choose from Library";
-                    if (result)
-                        galleryIntent();
-                } else if (items[item].equals("Cancel")) {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }*/
 
-    private void galleryIntent() {
-
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);//
-        startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
-    }
-
-    private void cameraIntent() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, REQUEST_CAMERA);
-    }
-
-   /* private void galleryIntent1() {
-
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);//
-        startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
-    }
-*/
-    private void cameraIntent1() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, REQUEST_CAMERA);
-    }
 
     public static class Utility {
         public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -388,13 +489,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-   /* private void pickFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        String[] mimetypes = {"image/jpeg", "image/png"};
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-        startActivityForResult(intent, Gallery_slection_code);
-    }*/
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -412,52 +508,117 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void galleryIntent() {
 
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        //This is the directory in which the file will be created. This is the default location of Camera photos
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), "Camera");
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        // Save a file: path for using again
-        cameraFilePath = "file://" + image.getAbsolutePath();
-        return image;
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
     }
 
-
-    private void captureFromCamera() {
-        try {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", createImageFile()));
-            startActivityForResult(intent, Camera_slection_code);
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    private void cameraIntent() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent,1);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                if (resultCode==RESULT_OK){
+                    Bitmap userimage1=(Bitmap)data.getExtras().get("data");
+                    Bundle extras = data.getExtras();
+                    userimage1 = (Bitmap) extras.get("data");
+                    imageView.setImageBitmap(userimage1);
+                }
+                break;
+            case 2:
+                if (resultCode==RESULT_OK){
+                    Bitmap userimage2=(Bitmap)data.getExtras().get("data");
+                    Bundle extras = data.getExtras();
+                    userimage2 = (Bitmap) extras.get("data");
+                    imageView2.setImageBitmap(userimage2);
+                }
 
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE)
-                onSelectFromGalleryResult(data);
-            else if (requestCode == REQUEST_CAMERA)
-                onCaptureImageResult(data);
         }
     }
 
-    private void onCaptureImageResult(Intent data) {
+    /*  @Override
+        protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
 
-        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+            if (resultCode == Activity.RESULT_OK) {
+                if (requestCode == SELECT_FILE) {
+
+                    if(rcfile) {
+
+                        onSelectFromGalleryResult(data);
+                    }else if(driverfile){
+
+                        onSelectFromGalleryResult1(data);
+
+                    }else if(dpfile){
+                        onSelectFromGalleryResult2(data);
+                    }
+                }
+
+                else if (requestCode == REQUEST_CAMERA) {
+
+                    if(rcfile) {
+
+                        onCaptureImageResult(data);
+                    }else if(driverfile){
+
+                        onCaptureImageResult1(data);
+
+                    }else if(dpfile){
+
+                        onCaptureImageResult2(data);
+
+                    }
+                }
+            }
+        }
+    */
+    public void onCaptureImageResult(Intent data) {
+
+        //filePath=data.getData();
+        thumbnail = (Bitmap) data.getExtras().get("data");
+        bytes = new ByteArrayOutputStream();
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        data1 = bytes.toByteArray();
+        File destination = new File(Environment.getExternalStorageDirectory(),
+                System.currentTimeMillis() + ".jpg");
+        FileOutputStream fo;
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+       // upLoadFileImage();
+
+        imageView.setImageBitmap(thumbnail);
+
+
+        rcfile=false;
+
+    }
+    public void onCaptureImageResult1(Intent data) {
+
+        //filePath=data.getData();
+        thumbnail = (Bitmap) data.getExtras().get("data");
+        bytes = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        data1 = bytes.toByteArray();
         File destination = new File(Environment.getExternalStorageDirectory(),
                 System.currentTimeMillis() + ".jpg");
         FileOutputStream fo;
@@ -473,20 +634,169 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        imageView.setImageBitmap(thumbnail);
+
         driverimage.setImageBitmap(thumbnail);
+
+
+        driverfile=false;
+
     }
+    public void onCaptureImageResult2(Intent data) {
+
+        //filePath=data.getData();
+        thumbnail = (Bitmap) data.getExtras().get("data");
+        bytes = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        data1 = bytes.toByteArray();
+        File destination = new File(Environment.getExternalStorageDirectory(),
+                System.currentTimeMillis() + ".jpg");
+        FileOutputStream fo;
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // upLoadFileImage();
+
+
+
+        dps.setImageBitmap(thumbnail);
+        dpfile=false;
+
+    }
+
+    private void upLoadImage(){
+        if(data1!=null){
+            final ProgressDialog progressDialog=new ProgressDialog(this);
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+
+            StorageReference ref=storageReference.child("images/"+ UUID.randomUUID().toString());
+            ref.putBytes(data1).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress=(100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Uploaded!"+(int)progress+"%");
+                }
+            });
+        }
+    }
+
+    private void upLoadFileImage(){
+        if(filePath!=null){
+            final ProgressDialog progressDialog=new ProgressDialog(this);
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+
+            StorageReference ref=storageReference.child("images/"+ UUID.randomUUID().toString());
+            ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress=(100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Uploaded!"+(int)progress+"%");
+                }
+            });
+        }
+    }
+
+
 
     private void onSelectFromGalleryResult(Intent data) {
         Bitmap bm=null;
         if (data != null) {
+
+            filePath=data.getData();
+
+            //data1 = data.toByteArray();
             try {
                 bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+
+
         imageView.setImageBitmap(bm);
+        rcfile=false;
+       /* driverimage.setImageBitmap(bm);
+        dps.setImageBitmap(bm);*/
+    }
+
+    private void onSelectFromGalleryResult1(Intent data) {
+        Bitmap bm=null;
+        if (data != null) {
+
+            filePath=data.getData();
+
+            //data1 = data.toByteArray();
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+    //    imageView.setImageBitmap(bm);
+        driverimage.setImageBitmap(bm);
+        driverfile=false;
+
+    }
+
+
+    private void onSelectFromGalleryResult2(Intent data) {
+        Bitmap bm=null;
+        if (data != null) {
+
+            filePath=data.getData();
+
+
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+        dps.setImageBitmap(bm);
+        dpfile=false;
     }
 }
 

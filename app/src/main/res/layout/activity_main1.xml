@@ -250,7 +250,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/rc_layout"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:layout_width="match_parent"
@@ -259,14 +259,33 @@
                 android:gravity="center"
                 android:textSize="20sp"/>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/child_layout"
+                android:visibility="visible"
+                android:layout_gravity="center"
+                android:gravity="center">
+
 
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:src="@android:drawable/ic_menu_camera"
                 android:layout_gravity="center"
-                android:id="@+id/rc_image"
+                android:id="@+id/rc_image1"
                 />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@android:drawable/ic_menu_camera"
+                android:layout_gravity="center"
+                android:id="@+id/rc_image2"
+                />
+
+            </LinearLayout>
 
 
 
@@ -276,13 +295,14 @@
                 android:layout_gravity="center"
                 android:src="@android:drawable/ic_menu_camera"
                 android:background="#ffffff"
-                android:id="@+id/rc_btn"/>
+                android:id="@+id/rc_btn"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/click_rc"
-                android:text="click above button to set your proof"
+                android:text="click above image to set your proof"
                 android:layout_gravity="center"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
@@ -548,6 +568,17 @@
             android:text="next"
             android:textSize="20sp"
             />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/submit"
+            android:layout_weight=".5"
+            android:text="Register"
+            android:textSize="20sp"
+            android:visibility="gone"
+            />
+
     </LinearLayout>
 
 </RelativeLayout>
