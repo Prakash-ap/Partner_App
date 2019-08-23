@@ -245,12 +245,15 @@
 
     </LinearLayout>
 
+
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/rc_layout"
-            android:visibility="visible">
+            android:visibility="gone">
+
 
             <TextView
                 android:layout_width="match_parent"
@@ -259,14 +262,25 @@
                 android:gravity="center"
                 android:textSize="20sp"/>
 
+
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@android:drawable/ic_menu_camera"
+                android:layout_gravity="center"
+                android:id="@+id/rc_image"
+                />
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/child_layout"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_gravity="center"
-                android:gravity="center">
+                android:gravity="center"
+                >
 
 
             <ImageView
@@ -283,6 +297,7 @@
                 android:src="@android:drawable/ic_menu_camera"
                 android:layout_gravity="center"
                 android:id="@+id/rc_image2"
+
                 />
 
             </LinearLayout>
@@ -296,7 +311,7 @@
                 android:src="@android:drawable/ic_menu_camera"
                 android:background="#ffffff"
                 android:id="@+id/rc_btn"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
             <TextView
                 android:layout_width="wrap_content"

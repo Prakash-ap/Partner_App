@@ -13,6 +13,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -102,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     List<Vehicle_User>vehicle_users;
     int id;
     boolean rcfile,driverfile,dpfile;
+    public static final String STORAGE_PATH_UPLOADS = "uploads/";
+    public static final String DATABASE_PATH_UPLOADS = "uploads";
 
 
 
@@ -119,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         dp = findViewById(R.id.dp_layout);
         rc_btn = findViewById(R.id.rc_btn);
         rchorizontallayout = findViewById(R.id.rc);
-        imageView = findViewById(R.id.rc_image1);
+        imageView = findViewById(R.id.rc_image);
         imageView2= findViewById(R.id.rc_image2);
         driverimage=findViewById(R.id.driverimage);
         dr_btn=findViewById(R.id.dr_btn);
@@ -207,7 +211,18 @@ public class MainActivity extends AppCompatActivity {
                     driverboolean = true;
                     dpboolean = false;
 
-                    imageView.setOnClickListener(new View.OnClickListener() {
+                    rc_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            rcfile=true;
+
+                            selectImage();
+
+                        }
+                    });
+
+                   /* imageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
@@ -230,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                             selectImage();
                         }
                     });
-
+*/
 
                 } else if (driverboolean) {
                     previous.setVisibility(View.VISIBLE);
@@ -304,10 +319,10 @@ public class MainActivity extends AppCompatActivity {
                             if(!TextUtils.isEmpty(names)){
 
                                 userID=databaseReference.push().getKey();
-                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors);
+                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages);
                                 databaseReference.child(userID).setValue(vehicle_user);
-                                upLoadFileImage();
-                                upLoadImage();
+                                /*upLoadFileImage();
+                                upLoadImage();*/
 
                                 name.setText("");
                                 mobile_number.setText("");
@@ -518,11 +533,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void cameraIntent() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent,1);
+        startActivityForResult(intent,REQUEST_CAMERA);
     }
 
 
-    @Override
+  /*  @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
@@ -543,9 +558,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
         }
-    }
+    }*/
 
-    /*  @Override
+      @Override
         protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
 
@@ -556,12 +571,17 @@ public class MainActivity extends AppCompatActivity {
                     if(rcfile) {
 
                         onSelectFromGalleryResult(data);
+                        upLoadFileImage();
+                      //  rcimagess=taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+
                     }else if(driverfile){
 
                         onSelectFromGalleryResult1(data);
+                        upLoadFileImage();
 
                     }else if(dpfile){
                         onSelectFromGalleryResult2(data);
+                        upLoadFileImage();
                     }
                 }
 
@@ -570,19 +590,21 @@ public class MainActivity extends AppCompatActivity {
                     if(rcfile) {
 
                         onCaptureImageResult(data);
+                        upLoadImage();
                     }else if(driverfile){
 
                         onCaptureImageResult1(data);
+                        upLoadImage();
 
                     }else if(dpfile){
 
                         onCaptureImageResult2(data);
+                        upLoadImage();
 
                     }
                 }
             }
         }
-    */
     public void onCaptureImageResult(Intent data) {
 
         //filePath=data.getData();
@@ -642,7 +664,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void onCaptureImageResult2(Intent data) {
-
         //filePath=data.getData();
         thumbnail = (Bitmap) data.getExtras().get("data");
         bytes = new ByteArrayOutputStream();
@@ -662,13 +683,79 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // upLoadFileImage();
+         //upLoadFileImage();
 
 
 
         dps.setImageBitmap(thumbnail);
         dpfile=false;
 
+    }
+
+    private void onSelectFromGalleryResult(Intent data) {
+        Bitmap bm=null;
+        if (data != null) {
+
+            filePath=data.getData();
+
+            //data1 = data.toByteArray();
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+        imageView.setImageBitmap(bm);
+
+       /* driverimage.setImageBitmap(bm);
+        dps.setImageBitmap(bm);*/
+    }
+
+    private void onSelectFromGalleryResult1(Intent data) {
+        Bitmap bm=null;
+        if (data != null) {
+
+            filePath=data.getData();
+
+            //data1 = data.toByteArray();
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+    //    imageView.setImageBitmap(bm);
+        driverimage.setImageBitmap(bm);
+       // driverfile=false;
+
+    }
+
+
+    private void onSelectFromGalleryResult2(Intent data) {
+        Bitmap bm=null;
+        if (data != null) {
+
+            filePath=data.getData();
+
+
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+        dps.setImageBitmap(bm);
+     //   dpfile=false;
     }
 
     private void upLoadImage(){
@@ -707,12 +794,39 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
-            StorageReference ref=storageReference.child("images/"+ UUID.randomUUID().toString());
+            // StorageReference ref=storageReference.child("images/"+ UUID.randomUUID().toString());
+            StorageReference ref=storageReference.child("images/" + System.currentTimeMillis() + "." + getFileExtension(filePath));
             ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+
+
+                    if(rcfile) {
+
+                        rcimagess = filePath.toString();
+                        rcfile=false;
+                        Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                    }else if(driverfile){
+                        dlicesenes = filePath.toString();
+                        Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                        driverfile=false;
+
+
+                    }else if(dpfile){
+                        dpimages = filePath.toString();
+                        Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                        dpfile=false;
+
+
+                    }
+
+
+
+                    // Vehicle_User vehicle_user1=new Vehicle_User(rcimagess.trim(),taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
+                    //  String uploadId = databaseReference.push().getKey();
+                    // databaseReference.child(vehicle_user).setValue(vehicle_user1);
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -731,72 +845,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-    private void onSelectFromGalleryResult(Intent data) {
-        Bitmap bm=null;
-        if (data != null) {
-
-            filePath=data.getData();
-
-            //data1 = data.toByteArray();
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-        imageView.setImageBitmap(bm);
-        rcfile=false;
-       /* driverimage.setImageBitmap(bm);
-        dps.setImageBitmap(bm);*/
+    public String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
-    private void onSelectFromGalleryResult1(Intent data) {
-        Bitmap bm=null;
-        if (data != null) {
-
-            filePath=data.getData();
-
-            //data1 = data.toByteArray();
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-    //    imageView.setImageBitmap(bm);
-        driverimage.setImageBitmap(bm);
-        driverfile=false;
-
-    }
-
-
-    private void onSelectFromGalleryResult2(Intent data) {
-        Bitmap bm=null;
-        if (data != null) {
-
-            filePath=data.getData();
-
-
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-
-        dps.setImageBitmap(bm);
-        dpfile=false;
-    }
 }
 

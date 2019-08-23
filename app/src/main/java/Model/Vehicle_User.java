@@ -57,7 +57,7 @@ public class Vehicle_User {
         this.yor = yor;
     }
 
-    public Vehicle_User() {
+    public Vehicle_User(String trim, String s) {
     }
 
     public String getId() {
