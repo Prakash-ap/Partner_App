@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView dps;
     EditText name,mobile_number,emailid,address,vehicle_no,vehicle_make,model,yor;
     Button submit;
-    String names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages;
+    String names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status;
     String userID;
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         dpboolean = false;
 
         firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference=firebaseDatabase.getReference("vehicle_user");
+        databaseReference=firebaseDatabase.getReference("vehicle_users");
 
 
 
@@ -314,12 +315,13 @@ public class MainActivity extends AppCompatActivity {
                             vms=vehicle_make.getText().toString();
                             vmos=model.getText().toString();
                             yors=yor.getText().toString();
+                            status="PENDING";
 
 
                             if(!TextUtils.isEmpty(names)){
 
                                 userID=databaseReference.push().getKey();
-                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages);
+                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status);
                                 databaseReference.child(userID).setValue(vehicle_user);
                                 /*upLoadFileImage();
                                 upLoadImage();*/
@@ -332,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
                                 vehicle_make.setText("");
                                 model.setText("");
                                 yor.setText("");
+
 
                                 imageView.setImageResource(R.drawable.placeholder);
                                 imageView2.setImageResource(R.drawable.placeholder);
@@ -742,10 +745,12 @@ public class MainActivity extends AppCompatActivity {
         if (data != null) {
 
             filePath=data.getData();
+            Log.d("dp", "onSelectFromGalleryResult2: "+filePath);
 
 
             try {
                 bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+                Log.d("dp1", "onSelectFromGalleryResult2: "+bm);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -795,27 +800,41 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.show();
 
             // StorageReference ref=storageReference.child("images/"+ UUID.randomUUID().toString());
-            StorageReference ref=storageReference.child("images/" + System.currentTimeMillis() + "." + getFileExtension(filePath));
+            final StorageReference ref=storageReference.child("images/" + System.currentTimeMillis() + "." + getFileExtension(filePath));
             ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d("FilePath", "onSuccess: "+filePath);
                     progressDialog.dismiss();
+
+
+             //       Uri sampleUri=taskSnapshot.getDownloadUrl
+
+                    
+
+
+                 //  Uri uri=taskSnapshot.getUploadSessionUri().t
+
+                  //Uri sample= taskSnapshot.getDownloadUrl();
 
 
 
                     if(rcfile) {
 
-                        rcimagess = filePath.toString();
+                      //  Vehicle_User vehicle_user=new Vehicle_User(taskSnapshot.getDownloadUrl().toString());
+
+                        rcimagess = ref+"/";
                         rcfile=false;
                         Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
                     }else if(driverfile){
-                        dlicesenes = filePath.toString();
+                        dlicesenes = ref+"/";
                         Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
                         driverfile=false;
 
 
                     }else if(dpfile){
-                        dpimages = filePath.toString();
+                        dpimages =ref+"/";
+                        Log.d("MainActivity", "onSuccess: "+dpimages);
                         Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
                         dpfile=false;
 

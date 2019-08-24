@@ -15,6 +15,27 @@ public class Vehicle_User {
     private String rc_image_url;
     private String driver_license_image_url;
     private String dp_image_url;
+    private String status;
+
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status) {
+        this.id = id;
+        this.name = name;
+        this.mobile_no = mobile_no;
+        this.emailid = emailid;
+        this.address = address;
+        this.vehicle_no = vehicle_no;
+        this.vehicle_make = vehicle_make;
+        this.vehicle_model = vehicle_model;
+        this.yor = yor;
+        this.rc_image_url = rc_image_url;
+        this.driver_license_image_url = driver_license_image_url;
+        this.dp_image_url = dp_image_url;
+        this.status = status;
+    }
+
+    public Vehicle_User(String dp_image_url) {
+        this.dp_image_url = dp_image_url;
+    }
 
     public Vehicle_User(String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url) {
         this.name = name;
@@ -58,6 +79,14 @@ public class Vehicle_User {
     }
 
     public Vehicle_User(String trim, String s) {
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getId() {
