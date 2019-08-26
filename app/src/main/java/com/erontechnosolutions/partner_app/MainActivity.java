@@ -17,6 +17,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -76,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
     private String cameraFilePath;
     LinearLayout basic, vehicle, rc, driver, dp;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    SharedPreferences sharedpreferences;
+    public static final String userid = "id";
+
 
     Button previous, next;
     Bitmap thumbnail;
@@ -93,12 +98,13 @@ public class MainActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     private Uri filePath;
+    private Uri camerafilePath;
     ByteArrayOutputStream bytes;
     byte[] data1;
     ImageView dps;
-    EditText name,mobile_number,emailid,address,vehicle_no,vehicle_make,model,yor;
+    EditText name,mobile_number,emailid,address,vehicle_no,vehicle_make,model,yor,pass;
     Button submit;
-    String names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status;
+    String names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status,password;
     String userID;
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
@@ -139,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
         model=findViewById(R.id.vehicle_model_edt);
         yor=findViewById(R.id.vehicle_yor_edt);
         submit=findViewById(R.id.submit);
+        pass=findViewById(R.id.returning_password);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
 
 
 
@@ -315,16 +324,20 @@ public class MainActivity extends AppCompatActivity {
                             vms=vehicle_make.getText().toString();
                             vmos=model.getText().toString();
                             yors=yor.getText().toString();
+                            password=pass.getText().toString();
                             status="PENDING";
 
 
                             if(!TextUtils.isEmpty(names)){
 
                                 userID=databaseReference.push().getKey();
-                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status);
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putString(userid,userID);
+                                editor.commit();
+
+                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status,password);
                                 databaseReference.child(userID).setValue(vehicle_user);
-                                /*upLoadFileImage();
-                                upLoadImage();*/
+
 
                                 name.setText("");
                                 mobile_number.setText("");
@@ -334,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
                                 vehicle_make.setText("");
                                 model.setText("");
                                 yor.setText("");
+                                pass.setText("");
 
 
                                 imageView.setImageResource(R.drawable.placeholder);
@@ -341,6 +355,19 @@ public class MainActivity extends AppCompatActivity {
                                 dps.setImageResource(R.drawable.placeholder);
                                 driverimage.setImageResource(R.drawable.placeholder);
                                 Toast.makeText(MainActivity.this, "Successfully added", Toast.LENGTH_SHORT).show();
+                                AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+                                builder.setCancelable(true);
+                                builder.setTitle("Successfully Registered!");
+                                builder.setMessage("You Registered Successfully,We contact you after Verification is done!!!");
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                        finishAffinity();
+                                    }
+                                });
+                                AlertDialog dialog=builder.create();
+                                dialog.show();
 
                                // createUser(names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages);
                             }else{
@@ -634,7 +661,7 @@ public class MainActivity extends AppCompatActivity {
         imageView.setImageBitmap(thumbnail);
 
 
-        rcfile=false;
+      //  rcfile=false;
 
     }
     public void onCaptureImageResult1(Intent data) {
@@ -663,7 +690,7 @@ public class MainActivity extends AppCompatActivity {
         driverimage.setImageBitmap(thumbnail);
 
 
-        driverfile=false;
+      //  driverfile=false;
 
     }
     public void onCaptureImageResult2(Intent data) {
@@ -691,7 +718,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         dps.setImageBitmap(thumbnail);
-        dpfile=false;
+     //   dpfile=false;
 
     }
 
@@ -769,14 +796,51 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
-            StorageReference ref=storageReference.child("images/"+ UUID.randomUUID().toString());
-            ref.putBytes(data1).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            final StorageReference ref1=storageReference.child("images/"+ UUID.randomUUID().toString());
+            ref1.putBytes(data1).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
 
+                    ref1.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String fileuri = uri.toString();
+                            if (rcfile) {
+
+                                //  Vehicle_User vehicle_user=new Vehicle_User(taskSnapshot.getDownloadUrl().toString());
+
+                                rcimagess = fileuri;
+                                rcfile = false;
+                                progressDialog.dismiss();
+
+                                Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                            } else if (driverfile) {
+                                dlicesenes = fileuri;
+                                Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                                driverfile = false;
+                                progressDialog.dismiss();
+
+
+
+                            } else if (dpfile) {
+                                dpimages = fileuri;
+                                Log.d("MainActivity", "onSuccess: " + dpimages);
+                                Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                                dpfile = false;
+
+                                progressDialog.dismiss();
+
+
+                            }
+                          //  progressDialog.dismiss();
+                            Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+
+                        }
+                    });
                 }
+
+
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
@@ -787,9 +851,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                     double progress=(100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                    progressDialog.setMessage("Uploaded!"+(int)progress+"%");
+                    progressDialog.setMessage("Uploaded "+(int)progress+"%");
                 }
             });
+
         }
     }
 
@@ -805,7 +870,42 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d("FilePath", "onSuccess: "+filePath);
-                    progressDialog.dismiss();
+
+                    ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String fileuri=uri.toString();
+                            if(rcfile) {
+
+                                //  Vehicle_User vehicle_user=new Vehicle_User(taskSnapshot.getDownloadUrl().toString());
+
+                                rcimagess = fileuri;
+                                rcfile=false;
+                                progressDialog.dismiss();
+
+                                Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                            }else if(driverfile){
+                                dlicesenes = fileuri;
+                                driverfile=false;
+                                progressDialog.dismiss();
+                                Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+
+
+                            }else if(dpfile){
+                                dpimages =fileuri;
+                                Log.d("MainActivity", "onSuccess: "+dpimages);
+                                Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                                dpfile=false;
+                                progressDialog.dismiss();
+
+
+
+                            }
+
+
+                        }
+                    });
 
 
              //       Uri sampleUri=taskSnapshot.getDownloadUrl
@@ -819,27 +919,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                    if(rcfile) {
-
-                      //  Vehicle_User vehicle_user=new Vehicle_User(taskSnapshot.getDownloadUrl().toString());
-
-                        rcimagess = ref+"/";
-                        rcfile=false;
-                        Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                    }else if(driverfile){
-                        dlicesenes = ref+"/";
-                        Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                        driverfile=false;
-
-
-                    }else if(dpfile){
-                        dpimages =ref+"/";
-                        Log.d("MainActivity", "onSuccess: "+dpimages);
-                        Toast.makeText(MainActivity.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                        dpfile=false;
-
-
-                    }
 
 
 
