@@ -41,10 +41,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -80,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String MyPREFERENCES = "MyPrefs" ;
     SharedPreferences sharedpreferences;
     public static final String userid = "id";
+    private FirebaseAuth firebaseAuth;
+
 
 
     Button previous, next;
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     boolean rcfile,driverfile,dpfile;
     public static final String STORAGE_PATH_UPLOADS = "uploads/";
     public static final String DATABASE_PATH_UPLOADS = "uploads";
+    String location;
 
 
 
@@ -131,29 +137,28 @@ public class MainActivity extends AppCompatActivity {
         rc_btn = findViewById(R.id.rc_btn);
         rchorizontallayout = findViewById(R.id.rc);
         imageView = findViewById(R.id.rc_image);
-        imageView2= findViewById(R.id.rc_image2);
-        driverimage=findViewById(R.id.driverimage);
-        dr_btn=findViewById(R.id.dr_btn);
-        dpupload=findViewById(R.id.dpupload);
-        dps=findViewById(R.id.dp);
-        name=findViewById(R.id.nameedt);
-        mobile_number=findViewById(R.id.mobileedt);
-        emailid=findViewById(R.id.emailedt);
-        address=findViewById(R.id.addressedt);
-        vehicle_no=findViewById(R.id.vehicle_no_edt);
-        vehicle_make=findViewById(R.id.vehicle_make_edt);
-        model=findViewById(R.id.vehicle_model_edt);
-        yor=findViewById(R.id.vehicle_yor_edt);
-        submit=findViewById(R.id.submit);
-        pass=findViewById(R.id.returning_password);
+        imageView2 = findViewById(R.id.rc_image2);
+        driverimage = findViewById(R.id.driverimage);
+        dr_btn = findViewById(R.id.dr_btn);
+        dpupload = findViewById(R.id.dpupload);
+        dps = findViewById(R.id.dp);
+        name = findViewById(R.id.nameedt);
+        mobile_number = findViewById(R.id.mobileedt);
+        emailid = findViewById(R.id.emailedt);
+        address = findViewById(R.id.addressedt);
+        vehicle_no = findViewById(R.id.vehicle_no_edt);
+        vehicle_make = findViewById(R.id.vehicle_make_edt);
+        model = findViewById(R.id.vehicle_model_edt);
+        yor = findViewById(R.id.vehicle_yor_edt);
+        submit = findViewById(R.id.submit);
+        pass = findViewById(R.id.returning_password);
+        firebaseAuth = FirebaseAuth.getInstance();
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
 
 
-
-        storage=FirebaseStorage.getInstance();
-        storageReference=storage.getReference();
-
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
 
         previous = findViewById(R.id.previous_common);
@@ -169,68 +174,67 @@ public class MainActivity extends AppCompatActivity {
         driverboolean = false;
         dpboolean = false;
 
-        firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference=firebaseDatabase.getReference("vehicle_users");
-
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("vehicle_users");
 
 
         next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                                    @Override
+                                    public void onClick(View view) {
 
 
-                if (basciboolean) {
+                                        if (basciboolean) {
 
-                    // basic.setVisibility(View.VISIBLE);
-                    vehicle.setVisibility(View.GONE);
-                    rc.setVisibility(View.GONE);
-                    driver.setVisibility(View.GONE);
-                    dp.setVisibility(View.GONE);
-                    basciboolean = false;
-                    vehicleboolean = true;
-                    rcboolean = false;
-                    driverboolean = false;
-                    dpboolean = false;
+                                            // basic.setVisibility(View.VISIBLE);
+                                            vehicle.setVisibility(View.GONE);
+                                            rc.setVisibility(View.GONE);
+                                            driver.setVisibility(View.GONE);
+                                            dp.setVisibility(View.GONE);
+                                            basciboolean = false;
+                                            vehicleboolean = true;
+                                            rcboolean = false;
+                                            driverboolean = false;
+                                            dpboolean = false;
 
-                } else if (vehicleboolean) {
+                                        } else if (vehicleboolean) {
 
-                    previous.setVisibility(View.VISIBLE);
-                    basic.setVisibility(View.GONE);
-                    vehicle.setVisibility(View.VISIBLE);
-                    rc.setVisibility(View.GONE);
-                    driver.setVisibility(View.GONE);
-                    dp.setVisibility(View.GONE);
-                    basciboolean = false;
-                    vehicleboolean = false;
-                    rcboolean = true;
-                    driverboolean = false;
-                    dpboolean = false;
+                                            previous.setVisibility(View.VISIBLE);
+                                            basic.setVisibility(View.GONE);
+                                            vehicle.setVisibility(View.VISIBLE);
+                                            rc.setVisibility(View.GONE);
+                                            driver.setVisibility(View.GONE);
+                                            dp.setVisibility(View.GONE);
+                                            basciboolean = false;
+                                            vehicleboolean = false;
+                                            rcboolean = true;
+                                            driverboolean = false;
+                                            dpboolean = false;
 
 
-                } else if (rcboolean) {
+                                        } else if (rcboolean) {
 
-                    previous.setVisibility(View.VISIBLE);
-                    basic.setVisibility(View.GONE);
-                    vehicle.setVisibility(View.GONE);
-                    rc.setVisibility(View.VISIBLE);
-                    driver.setVisibility(View.GONE);
-                    dp.setVisibility(View.GONE);
-                    basciboolean = false;
-                    vehicleboolean = false;
-                    rcboolean = false;
-                    driverboolean = true;
-                    dpboolean = false;
+                                            previous.setVisibility(View.VISIBLE);
+                                            basic.setVisibility(View.GONE);
+                                            vehicle.setVisibility(View.GONE);
+                                            rc.setVisibility(View.VISIBLE);
+                                            driver.setVisibility(View.GONE);
+                                            dp.setVisibility(View.GONE);
+                                            basciboolean = false;
+                                            vehicleboolean = false;
+                                            rcboolean = false;
+                                            driverboolean = true;
+                                            dpboolean = false;
 
-                    rc_btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                                            rc_btn.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
 
-                            rcfile=true;
+                                                    rcfile = true;
 
-                            selectImage();
+                                                    selectImage();
 
-                        }
-                    });
+                                                }
+                                            });
 
                    /* imageView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -257,131 +261,198 @@ public class MainActivity extends AppCompatActivity {
                     });
 */
 
-                } else if (driverboolean) {
-                    previous.setVisibility(View.VISIBLE);
-                    basic.setVisibility(View.GONE);
-                    vehicle.setVisibility(View.GONE);
-                    rc.setVisibility(View.GONE);
-                    driver.setVisibility(View.VISIBLE);
-                    dp.setVisibility(View.GONE);
-                    basciboolean = false;
-                    vehicleboolean = false;
-                    rcboolean = false;
-                    driverboolean = false;
-                    dpboolean = true;
-                    dr_btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                                        } else if (driverboolean) {
+                                            previous.setVisibility(View.VISIBLE);
+                                            basic.setVisibility(View.GONE);
+                                            vehicle.setVisibility(View.GONE);
+                                            rc.setVisibility(View.GONE);
+                                            driver.setVisibility(View.VISIBLE);
+                                            dp.setVisibility(View.GONE);
+                                            basciboolean = false;
+                                            vehicleboolean = false;
+                                            rcboolean = false;
+                                            driverboolean = false;
+                                            dpboolean = true;
+                                            dr_btn.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
 
-                            driverfile=true;
-
-
-                            selectImage();
+                                                    driverfile = true;
 
 
-
-                        }
-
-                    });
+                                                    selectImage();
 
 
-                } else if (dpboolean) {
-                    previous.setVisibility(View.VISIBLE);
-                    next.setVisibility(View.GONE);
-                    submit.setVisibility(View.VISIBLE);
-                    basic.setVisibility(View.GONE);
-                    vehicle.setVisibility(View.GONE);
-                    rc.setVisibility(View.GONE);
-                    driver.setVisibility(View.GONE);
-                    dp.setVisibility(View.VISIBLE);
-                    basciboolean = false;
-                    vehicleboolean = false;
-                    rcboolean = false;
-                    driverboolean = false;
-                    dpboolean = false;
+                                                }
 
-                    dpupload.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            dpfile=true;
-                            selectImage();
+                                            });
 
 
+                                        } else if (dpboolean) {
+                                            previous.setVisibility(View.VISIBLE);
+                                            next.setVisibility(View.GONE);
+                                            submit.setVisibility(View.VISIBLE);
+                                            basic.setVisibility(View.GONE);
+                                            vehicle.setVisibility(View.GONE);
+                                            rc.setVisibility(View.GONE);
+                                            driver.setVisibility(View.GONE);
+                                            dp.setVisibility(View.VISIBLE);
+                                            basciboolean = false;
+                                            vehicleboolean = false;
+                                            rcboolean = false;
+                                            driverboolean = false;
+                                            dpboolean = false;
 
-                        }
-                    });
+                                            dpupload.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
 
-                    submit.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            names=name.getText().toString();
-                            mobilenos=mobile_number.getText().toString();
-                            emailds=emailid.getText().toString();
-                            addresss=address.getText().toString();
-                            vnos=vehicle_no.getText().toString();
-                            vms=vehicle_make.getText().toString();
-                            vmos=model.getText().toString();
-                            yors=yor.getText().toString();
-                            password=pass.getText().toString();
-                            status="PENDING";
-
-
-                            if(!TextUtils.isEmpty(names)){
-
-                                userID=databaseReference.push().getKey();
-                                SharedPreferences.Editor editor = sharedpreferences.edit();
-                                editor.putString(userid,userID);
-                                editor.commit();
-
-                                Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status,password);
-                                databaseReference.child(userID).setValue(vehicle_user);
+                                                    dpfile = true;
+                                                    selectImage();
 
 
-                                name.setText("");
-                                mobile_number.setText("");
-                                emailid.setText("");
-                                address.setText("");
-                                vehicle_no.setText("");
-                                vehicle_make.setText("");
-                                model.setText("");
-                                yor.setText("");
-                                pass.setText("");
+                                                }
+                                            });
+
+                                            submit.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+
+                                                    names = name.getText().toString();
+                                                    mobilenos = mobile_number.getText().toString();
+                                                    emailds = emailid.getText().toString();
+                                                    addresss = address.getText().toString();
+                                                    vnos = vehicle_no.getText().toString();
+                                                    vms = vehicle_make.getText().toString();
+                                                    vmos = model.getText().toString();
+                                                    yors = yor.getText().toString();
+                                                    password = pass.getText().toString();
+                                                    status = "PENDING";
+                                                    location="NEW";
+
+                                                    if (!validateForm()) {
+                                                        return;
+                                                    }
 
 
-                                imageView.setImageResource(R.drawable.placeholder);
-                                imageView2.setImageResource(R.drawable.placeholder);
-                                dps.setImageResource(R.drawable.placeholder);
-                                driverimage.setImageResource(R.drawable.placeholder);
-                                Toast.makeText(MainActivity.this, "Successfully added", Toast.LENGTH_SHORT).show();
-                                AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
-                                builder.setCancelable(true);
-                                builder.setTitle("Successfully Registered!");
-                                builder.setMessage("You Registered Successfully,We contact you after Verification is done!!!");
-                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                        finishAffinity();
+                                                    ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                                                    progressDialog.setMessage("Loading");
+                                                    progressDialog.show();
+                                                    firebaseAuth.createUserWithEmailAndPassword(emailds, password)
+                                                            .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        Toast.makeText(MainActivity.this, "successfully registered", Toast.LENGTH_SHORT).show();
+
+
+                                                                    } else {
+                                                                        Toast.makeText(MainActivity.this, "Authentication Failed!", Toast.LENGTH_SHORT).show();
+                                                                        // updateUI(null);
+                                                                    }
+                                                                }
+                                                            });
+                                                    progressDialog.dismiss();
+                                                    userID = firebaseAuth.getUid();
+                                                    /*SharedPreferences.Editor editor = sharedpreferences.edit();
+                                                    editor.putString(userid, userID);
+                                                    editor.commit();
+*/
+                                                    Vehicle_User vehicle_user = new Vehicle_User(userID, names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password,location);
+                                                    databaseReference.child(userID).setValue(vehicle_user);
+                                                    name.setText("");
+                                                    mobile_number.setText("");
+                                                    emailid.setText("");
+                                                    address.setText("");
+                                                    vehicle_no.setText("");
+                                                    vehicle_make.setText("");
+                                                    model.setText("");
+                                                    yor.setText("");
+                                                    pass.setText("");
+
+
+                                                    imageView.setImageResource(R.drawable.placeholder);
+                                                    imageView2.setImageResource(R.drawable.placeholder);
+                                                    dps.setImageResource(R.drawable.placeholder);
+                                                    driverimage.setImageResource(R.drawable.placeholder);
+                                                    Toast.makeText(MainActivity.this, "Successfully added", Toast.LENGTH_SHORT).show();
+                                                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                                    builder.setCancelable(true);
+                                                    builder.setTitle("Successfully Registered!");
+                                                    builder.setMessage("You Registered Successfully,We contact you after Verification is done!!!");
+                                                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            dialogInterface.dismiss();
+                                                            finishAffinity();
+                                                        }
+                                                    });
+                                                    AlertDialog dialog = builder.create();
+                                                    dialog.show();
+
+                                                }
+
+                                            });
+
+
+                                        }
+
+
                                     }
+
+
+
                                 });
-                                AlertDialog dialog=builder.create();
-                                dialog.show();
 
-                               // createUser(names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages);
-                            }else{
-                                Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                            }
+        /*userID = firebaseAuth.getUid();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(userid, userID);
+        editor.commit();
 
-                        }
-                    });
+        Vehicle_User vehicle_user = new Vehicle_User(userID, names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password);
+        databaseReference.child(userID).setValue(vehicle_user);
 
 
-                }
+        name.setText("");
+        mobile_number.setText("");
+        emailid.setText("");
+        address.setText("");
+        vehicle_no.setText("");
+        vehicle_make.setText("");
+        model.setText("");
+        yor.setText("");
+        pass.setText("");
 
+
+        imageView.setImageResource(R.drawable.placeholder);
+        imageView2.setImageResource(R.drawable.placeholder);
+        dps.setImageResource(R.drawable.placeholder);
+        driverimage.setImageResource(R.drawable.placeholder);
+        Toast.makeText(MainActivity.this, "Successfully added", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setCancelable(true);
+        builder.setTitle("Successfully Registered!");
+        builder.setMessage("You Registered Successfully,We contact you after Verification is done!!!");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                finishAffinity();
             }
         });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+*/
+
+
+                                                // createUser(names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages);
+
+
+
+
+                                //  }
+                                // });  });
+
 
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -472,8 +543,47 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+
+
     }
-            private void selectImage() {
+
+
+
+    private boolean validateForm() {
+
+        boolean valid=true;
+
+        String email=emailid.getText().toString();
+        String pswd=pass.getText().toString();
+
+        if(TextUtils.isEmpty(email)){
+            emailid.setError("Required!");
+            valid=false;
+        }else{
+
+            emailid.setError(null);
+        }
+
+        if(TextUtils.isEmpty(pswd)){
+            pass.setError("Required!");
+            valid=false;
+        }else {
+            pass.setError(null);
+        }
+
+        if(password.length()<6){
+            pass.setError("Password should not less than 6");
+            valid=false;
+        }else {
+            pass.setError(null);
+        }
+        return valid;
+
+
+
+    }
+
+    private void selectImage() {
                 final CharSequence[] items = {"Take Photo", "Choose from Library",
                         "Cancel"};
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -949,5 +1059,18 @@ public class MainActivity extends AppCompatActivity {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser firebaseUser=firebaseAuth.getCurrentUser();
+      //  updateUI(firebaseUser);
+    }
+
+    private void updateUI(FirebaseUser firebaseUser) {
+
+          if(firebaseUser!=null){
+
+          }
+    }
 }
 

@@ -16,6 +16,10 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,16 +38,25 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import Model.Vehicle_User;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener,GoogleMap.InfoWindowAdapter,GoogleMap.OnInfoWindowClickListener{
 
     private static final int PLAY_SERVICES_REQUEST =100 ;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION =101 ;
@@ -54,11 +67,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationRequest mLocationRequest;
     Marker mCurrLocationMarker;
     Location mLastLocation;
+    String name;
+    String phno;
+    String vno;
+    FirebaseAuth firebaseAuth;
+    MarkerOptions markerOptions;
+    String userID;
+    private Context context;
+
+    public MapsActivity(Context context) {
+        this.context = context;
+    }
+
+    public MapsActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
+
+
+        firebaseAuth=FirebaseAuth.getInstance();
+        userID=firebaseAuth.getUid();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -99,7 +132,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setInfoWindowAdapter(this);
+        mMap.setOnInfoWindowClickListener(this);
 
 
         //Initialize Google Play Services
@@ -151,10 +186,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
+
+
+
+
+
+        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("vehicle_users");
+
+        Query query = reference.child(userID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
+                name=vehicle_user.getName();
+                phno=vehicle_user.getMobile_no();
+                 vno=vehicle_user.getVehicle_no();
+
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        /*String nam1=name;
+        String phnom=phno;
+        String veno=vno;*/
+
+
 //Showing Current Location Marker on Map
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions=new MarkerOptions();
         markerOptions.position(latLng);
+       /* markerOptions.title("" + nam1 + "," + phnom + "," + veno
+        );*/
         LocationManager locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
         String provider = locationManager.getBestProvider(new Criteria(), true);
@@ -165,6 +236,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         Location locations = locationManager.getLastKnownLocation(provider);
+        double lat=locations.getLatitude();
+        double lng=locations.getLongitude();
+
+        String latlngs= lat+ ","+lng;
+
+
+        DatabaseReference ref=FirebaseDatabase.getInstance().getReference("vehicle_users");
+        ref.child(userID).child("location").setValue(latlngs);
+
+
 
         List<String> providerList = locationManager.getAllProviders();
         if (null != locations && null != providerList && providerList.size() > 0) {
@@ -172,6 +253,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double latitude = locations.getLatitude();
             Geocoder geocoder = new Geocoder(getApplicationContext(),
                     Locale.getDefault());
+          /*  markerOptions.title("" + name + "," + phno + "," + vno
+            );*/
             try {
                 List<Address> listAddresses = geocoder.getFromLocation(latitude,
                         longitude, 1);
@@ -179,8 +262,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String state = listAddresses.get(0).getAdminArea();
                     String country = listAddresses.get(0).getCountryName();
                     String subLocality = listAddresses.get(0).getSubLocality();
-                    markerOptions.title("" + latLng + "," + subLocality + "," + state
-                            + "," + country);
+                   /* markerOptions.title("" + name + "," + phno + "," + vno
+                            + "," + country);*/
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -236,5 +319,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
         }
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+       LayoutInflater inflater = (LayoutInflater)
+               getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);            // R.layout.echo_info_window is a layout in my
+        // res/layout folder. You can provide your own
+        View v = inflater.inflate(R.layout.markerinfo_layout, null);
+
+        TextView tit=v.findViewById(R.id.title);
+        TextView phnos=v.findViewById(R.id.phnomarker);
+        TextView vnos=v.findViewById(R.id.vnomarker);
+        Button btn=v.findViewById(R.id.btnmarker);
+
+        tit.setText(name);
+        phnos.setText(phno);
+        vnos.setText(vno);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Send Message", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return v;
+    }
+
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Toast.makeText(getApplicationContext(), "Send Message", Toast.LENGTH_SHORT).show();
+
     }
 }

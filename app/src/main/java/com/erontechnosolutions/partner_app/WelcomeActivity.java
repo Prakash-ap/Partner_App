@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +51,9 @@ public class WelcomeActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     public static final String mypreference = "mypref";
     String welcomeuserid;
+    FirebaseAuth firebaseAuth;
+    String userid;
+
 
 
 
@@ -62,6 +66,7 @@ public class WelcomeActivity extends AppCompatActivity {
         dotsLayout = (LinearLayout) findViewById(R.id.layoutDots);
         btn_regis = (Button) findViewById(R.id.btn_register);
         btn_log = (Button) findViewById(R.id.btn_login);
+        firebaseAuth=FirebaseAuth.getInstance();
 
 
         layouts = new int[]{
@@ -115,22 +120,24 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 // checking for last page
 
-                sharedPreferences=getSharedPreferences(mypreference,MODE_PRIVATE);
-                if(sharedPreferences.contains("userid")){
-                    welcomeuserid=sharedPreferences.getString("userid","");
-                }
+               /* sharedPreferences = getSharedPreferences(mypreference, MODE_PRIVATE);
+                if (sharedPreferences.contains("userid")) {
+                    welcomeuserid = sharedPreferences.getString("userid", "");
+                }*/
 
-                final DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("vehicle_users") ;
-                reference.orderByChild("id").equalTo(welcomeuserid).addListenerForSingleValueEvent(new ValueEventListener() {
+                //  final DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("vehicle_users") ;
+
+                /*userid=firebaseAuth.getUid();
+                reference.orderByChild("id").equalTo(userid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         reference.orderByChild("status").equalTo("COMPLETED").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                startActivity(new Intent(WelcomeActivity.this,SignInActivity.class));
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {*/
+                startActivity(new Intent(WelcomeActivity.this, SignInActivity.class));
 
-                            }
+                           /* }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -139,33 +146,11 @@ public class WelcomeActivity extends AppCompatActivity {
 
                             }
                         });
-
-
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        AlertDialog.Builder builder=new AlertDialog.Builder(WelcomeActivity.this);
-                        builder.setTitle("Information!");
-                        builder.setMessage("Your Account yet not verified!");
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                        AlertDialog alertDialog=builder.create();
-                        alertDialog.show();
-
-                    }
-                });
-
-
+*/
             }
         });
+
+
     }
 
     private void addBottomDots(int currentPage) {

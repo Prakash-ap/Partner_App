@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:hint="name"
+        android:gravity="center"
+        android:padding="2dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/phnomarker"
+        android:hint="phno"
+        android:gravity="center"
+        android:padding="2dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/vnomarker"
+        android:hint="vno"
+        android:gravity="center"
+        android:padding="2dp"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnmarker"
+        android:hint="sendbtn"
+        android:text="send"
+        android:layout_gravity="center"
+        android:padding="2dp"/>
+
+
+</LinearLayout>

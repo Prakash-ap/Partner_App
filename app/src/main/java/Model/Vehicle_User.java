@@ -17,6 +17,26 @@ public class Vehicle_User {
     private String dp_image_url;
     private String status;
     private String password;
+    private String location;
+
+
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, String location) {
+        this.id = id;
+        this.name = name;
+        this.mobile_no = mobile_no;
+        this.emailid = emailid;
+        this.address = address;
+        this.vehicle_no = vehicle_no;
+        this.vehicle_make = vehicle_make;
+        this.vehicle_model = vehicle_model;
+        this.yor = yor;
+        this.rc_image_url = rc_image_url;
+        this.driver_license_image_url = driver_license_image_url;
+        this.dp_image_url = dp_image_url;
+        this.status = status;
+        this.password = password;
+        this.location = location;
+    }
 
     public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status) {
         this.id = id;
@@ -99,12 +119,23 @@ public class Vehicle_User {
     public Vehicle_User(String trim, String s) {
     }
 
+    public Vehicle_User() {
+    }
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getStatus() {

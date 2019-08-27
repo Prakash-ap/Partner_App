@@ -32,9 +32,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Your Mobile No"
-            android:inputType="phone"
-            android:id="@+id/mobileno_edt"/>
+            android:hint="Enter Your Email id"
+            android:inputType="textEmailAddress"
+            android:id="@+id/email_edt"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
