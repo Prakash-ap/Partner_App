@@ -86,7 +86,7 @@ public class SignInActivity extends AppCompatActivity {
 
                     }else {
 
-                          userID=mAuth.getUid();
+                          userID=mAuth.getCurrentUser().getUid();
 
                             DatabaseReference reference=FirebaseDatabase.getInstance().getReference("vehicle_users");
 

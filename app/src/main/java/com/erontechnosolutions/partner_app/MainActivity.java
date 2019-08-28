@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedpreferences;
     public static final String userid = "id";
     private FirebaseAuth firebaseAuth;
+    double lat,lng;
 
 
 
@@ -163,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
         previous = findViewById(R.id.previous_common);
         next = findViewById(R.id.next_common);
+        lat=0.0;
+        lng=0.0;
 
         vehicle.setVisibility(View.GONE);
         rc.setVisibility(View.GONE);
@@ -353,12 +356,30 @@ public class MainActivity extends AppCompatActivity {
                                                                 }
                                                             });
                                                     progressDialog.dismiss();
-                                                    userID = firebaseAuth.getUid();
+/*
+                                                    databaseReference.addValueEventListener(new ValueEventListener() {
+                                                        private String role;
+
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                                                Vehicle_User user = snapshot.getValue(Vehicle_User.class);
+
+                                                                role = user.getId();
+                                                                if(role!=null){
+                                                                   userID=role;
+                                                                }
+                                                            }
+                                                        }
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {}
+                                                    });*/
+                                                    userID = firebaseAuth.getCurrentUser().getUid();
                                                     /*SharedPreferences.Editor editor = sharedpreferences.edit();
                                                     editor.putString(userid, userID);
                                                     editor.commit();
 */
-                                                    Vehicle_User vehicle_user = new Vehicle_User(userID, names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password,location);
+                                                    Vehicle_User vehicle_user = new Vehicle_User(userID, names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password,lat,lng);
                                                     databaseReference.child(userID).setValue(vehicle_user);
                                                     name.setText("");
                                                     mobile_number.setText("");

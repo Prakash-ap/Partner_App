@@ -18,7 +18,27 @@ public class Vehicle_User {
     private String status;
     private String password;
     private String location;
+    private double lat;
+    private double lng;
 
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, double lat, double lng) {
+        this.id = id;
+        this.name = name;
+        this.mobile_no = mobile_no;
+        this.emailid = emailid;
+        this.address = address;
+        this.vehicle_no = vehicle_no;
+        this.vehicle_make = vehicle_make;
+        this.vehicle_model = vehicle_model;
+        this.yor = yor;
+        this.rc_image_url = rc_image_url;
+        this.driver_license_image_url = driver_license_image_url;
+        this.dp_image_url = dp_image_url;
+        this.status = status;
+        this.password = password;
+        this.lat = lat;
+        this.lng = lng;
+    }
 
     public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, String location) {
         this.id = id;
@@ -114,6 +134,22 @@ public class Vehicle_User {
         this.vehicle_make = vehicle_make;
         this.vehicle_model = vehicle_model;
         this.yor = yor;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
     public Vehicle_User(String trim, String s) {

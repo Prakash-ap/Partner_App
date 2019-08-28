@@ -128,7 +128,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
@@ -243,7 +242,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         DatabaseReference ref=FirebaseDatabase.getInstance().getReference("vehicle_users");
-        ref.child(userID).child("location").setValue(latlngs);
+        ref.child(userID).child("lat").setValue(lat);
+        ref.child(userID).child("lng").setValue(lng);
 
 
 
