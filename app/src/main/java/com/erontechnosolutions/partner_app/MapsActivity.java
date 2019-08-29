@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -199,7 +200,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
                 name=vehicle_user.getName();
                 phno=vehicle_user.getMobile_no();
-                 vno=vehicle_user.getVehicle_no();
+                vno=vehicle_user.getVehicle_no();
 
 
 
@@ -328,8 +329,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public View getInfoContents(Marker marker) {
-       LayoutInflater inflater = (LayoutInflater)
-               getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);            // R.layout.echo_info_window is a layout in my
+        LayoutInflater inflater = (LayoutInflater)
+                getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);            // R.layout.echo_info_window is a layout in my
         // res/layout folder. You can provide your own
         View v = inflater.inflate(R.layout.markerinfo_layout, null);
 
