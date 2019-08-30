@@ -44,11 +44,11 @@ public class SignInActivity extends AppCompatActivity {
 
 
 
-       /* if (mAuth.getCurrentUser() != null) {
+      /*  if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(SignInActivity.this, MapsActivity.class));
             finish();
-        }*/
-
+        }
+*/
         loginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

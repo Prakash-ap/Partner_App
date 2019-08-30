@@ -346,11 +346,12 @@
                 android:id="@+id/rc_btn"
                 android:visibility="visible"/>
 
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/click_rc"
-                android:text="click above image to set your proof"
+                android:text="click above image to set your proof "
                 android:layout_gravity="center"
                 android:textSize="20sp"
                 android:textStyle="bold"/>

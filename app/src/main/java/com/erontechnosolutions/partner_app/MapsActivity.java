@@ -49,8 +49,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import Model.Vehicle_User;
 
@@ -91,9 +93,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
+
         firebaseAuth=FirebaseAuth.getInstance();
         userID=firebaseAuth.getUid();
+        /*Map<String,Marker> markerMapsActivity=new HashMap<String,Marker>();
 
+        ChildEventListener markerchild=new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                userID=dataSnapshot.getKey();
+                Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
+                double lat=vehicle_user.getLat();
+                double lng=vehicle_user.getLng();
+                LatLng location = new LatLng(lat, lng);
+
+                Marker marker = markerMapsActivity.get(key);
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        }*/
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -249,13 +286,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         List<String> providerList = locationManager.getAllProviders();
-        if (null != locations && null != providerList && providerList.size() > 0) {
+       /* if (null != locations && null != providerList && providerList.size() > 0) {
             double longitude = locations.getLongitude();
             double latitude = locations.getLatitude();
             Geocoder geocoder = new Geocoder(getApplicationContext(),
                     Locale.getDefault());
-          /*  markerOptions.title("" + name + "," + phno + "," + vno
-            );*/
+          *//*  markerOptions.title("" + name + "," + phno + "," + vno
+            );*//*
             try {
                 List<Address> listAddresses = geocoder.getFromLocation(latitude,
                         longitude, 1);
@@ -263,13 +300,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String state = listAddresses.get(0).getAdminArea();
                     String country = listAddresses.get(0).getCountryName();
                     String subLocality = listAddresses.get(0).getSubLocality();
-                   /* markerOptions.title("" + name + "," + phno + "," + vno
-                            + "," + country);*/
+                   *//* markerOptions.title("" + name + "," + phno + "," + vno
+                            + "," + country);*//*
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -343,12 +380,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         phnos.setText(phno);
         vnos.setText(vno);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+       /* btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(context, "Send Message", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         return v;
     }

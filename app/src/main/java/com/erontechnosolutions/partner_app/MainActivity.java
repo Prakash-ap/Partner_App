@@ -41,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -487,11 +488,20 @@ public class MainActivity extends AppCompatActivity {
     private void saveData() {
 
 
-        if(rcimagess.isEmpty() || dlicesenes.isEmpty() || dpimages.isEmpty()){
-            Toast.makeText(this, "Images Should not be empty", Toast.LENGTH_SHORT).show();
-        }
-
-        else {
+        if (rcimagess.isEmpty() || dlicesenes.isEmpty() || dpimages.isEmpty()) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Proof");
+            alert.setMessage("Proof should not be empty");
+            alert.setCancelable(true);
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
+        } else {
 
 
             Vehicle_User vehicle_user = new Vehicle_User(userID, names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password);
@@ -528,8 +538,9 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
-
     }
+
+
 
 
     private boolean validateForm() {
@@ -766,7 +777,14 @@ public class MainActivity extends AppCompatActivity {
 
         // upLoadFileImage();
 
-        imageView.setImageBitmap(thumbnail);
+        if(thumbnail!=null){
+            imageView.setImageBitmap(thumbnail);
+        }else{
+            imageView.setImageResource(R.drawable.placeholder);
+        }
+
+      //  imageView.setImageBitmap(thumbnail);
+       // Glide.with(MainActivity.this).load(thumbnail).placeholder(R.drawable.placeholder).into(imageView);
 
 
         //  rcfile=false;
@@ -795,7 +813,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        driverimage.setImageBitmap(thumbnail);
+        if(thumbnail!=null){
+            driverimage.setImageBitmap(thumbnail);
+        }else{
+            driverimage.setImageResource(R.drawable.placeholder);
+        }
+
+      //  driverimage.setImageBitmap(thumbnail);
+      //  Glide.with(MainActivity.this).load(thumbnail).placeholder(R.drawable.placeholder).into(driverimage);
 
 
         //  driverfile=false;
@@ -824,8 +849,14 @@ public class MainActivity extends AppCompatActivity {
 
         //upLoadFileImage();
 
+        if(thumbnail!=null){
+            dps.setImageBitmap(thumbnail);
+        }else{
+            dps.setImageResource(R.drawable.placeholder);
+        }
 
-        dps.setImageBitmap(thumbnail);
+      //  dps.setImageBitmap(thumbnail);
+      //  Glide.with(MainActivity.this).load(thumbnail).placeholder(R.drawable.placeholder).into(dps);
         //   dpfile=false;
 
     }
@@ -844,8 +875,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if(bm!=null){
+            imageView.setImageBitmap(bm);
+        }else{
+            imageView.setImageResource(R.drawable.placeholder);
+        }
 
-        imageView.setImageBitmap(bm);
+     //  Glide.with(MainActivity.this).load(bm).asBitmap().placeholder(R.drawable.placeholder).into(imageView);
 
        /* driverimage.setImageBitmap(bm);
         dps.setImageBitmap(bm);*/
@@ -866,8 +902,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        if(bm!=null){
+            driverimage.setImageBitmap(bm);
+        }else{
+            driverimage.setImageResource(R.drawable.placeholder);
+        }
         //    imageView.setImageBitmap(bm);
-        driverimage.setImageBitmap(bm);
+       // driverimage.setImageBitmap(bm);
+       // Glide.with(MainActivity.this).load(bm).asBitmap().placeholder(R.drawable.placeholder).into(driverimage);
         // driverfile=false;
 
     }
@@ -890,7 +932,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        dps.setImageBitmap(bm);
+        if(bm!=null){
+            dps.setImageBitmap(bm);
+        }else{
+            dps.setImageResource(R.drawable.placeholder);
+        }
+       // dps.setImageBitmap(bm);
+       // Glide.with(MainActivity.this).load(bm).asBitmap().placeholder(R.drawable.placeholder).into(dps);
         //   dpfile=false;
     }
 
@@ -916,7 +964,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (fileuri != null) {
                                     rcimagess = fileuri;
                                 } else {
-                                    rcimagess = "";
+                                    Toast.makeText(MainActivity.this, "Proof should not be empty                                                              ", Toast.LENGTH_SHORT).show();
                                 }
                                 rcfile = false;
                                 progressDialog.dismiss();

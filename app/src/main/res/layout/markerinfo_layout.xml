@@ -18,14 +18,16 @@
         android:id="@+id/phnomarker"
         android:hint="phno"
         android:gravity="center"
-        android:padding="2dp"/>
+        android:padding="2dp"
+        android:visibility="gone"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/vnomarker"
         android:hint="vno"
         android:gravity="center"
-        android:padding="2dp"/>
+        android:padding="2dp"
+        android:visibility="gone"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +35,8 @@
         android:hint="sendbtn"
         android:text="send"
         android:layout_gravity="center"
-        android:padding="2dp"/>
+        android:padding="2dp"
+        android:visibility="gone"/>
 
 
 </LinearLayout>
