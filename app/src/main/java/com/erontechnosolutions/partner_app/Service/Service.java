@@ -105,4 +105,8 @@ public class Service extends FirebaseMessagingService {
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.i(TAG, "onTokenRefresh completed with token: " + token);
     }
+
+    public void newfunction(){
+
+    }
 }
