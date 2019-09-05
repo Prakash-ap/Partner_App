@@ -26,6 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import java.util.HashMap;
+
 import Model.Vehicle_User;
 
 public class SignInActivity extends AppCompatActivity {
@@ -100,12 +102,14 @@ public class SignInActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                    // dataSnapshot.getChildren();
-                                    Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
+                                    final Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
 
 
                                     String stat= vehicle_user != null ? vehicle_user.getStatus() : null;
 
                                     if(stat.equals("COMPLETED")){
+
+
                                         startActivity(new Intent(SignInActivity.this, MapsActivity.class));
                                         finish();
 
@@ -124,7 +128,15 @@ public class SignInActivity extends AppCompatActivity {
                                             }
 
                                             String token=task.getResult().getToken();
-                                            String msg=getString(R.string.fcm_token, token);;
+                                            HashMap<String, Object> result = new HashMap<>();
+                                            result.put("token", token);
+                                            FirebaseDatabase.getInstance().getReference().child("vehicle_users").child(vehicle_user.getId()).updateChildren(result);
+
+
+                                           /* DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("vehicle_users");
+                                            reference1.child("token").setValue(token);*/
+
+                                            String msg=getString(R.string.fcm_token, token);
                                             Log.d(TAG, "onComplete: "+msg);
                                             Toast.makeText(SignInActivity.this, msg, Toast.LENGTH_SHORT).show();
                                         }

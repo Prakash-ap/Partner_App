@@ -114,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
     Button submit;
     String names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password;
     String userID;
+    String admin;
+    String message;
+    String token;
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
     List<Vehicle_User> vehicle_users;
@@ -310,6 +313,7 @@ public class MainActivity extends AppCompatActivity {
                     driverboolean = false;
                     dpboolean = false;
 
+
                     dpupload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -336,6 +340,9 @@ public class MainActivity extends AppCompatActivity {
                             yors = yor.getText().toString();
                             password = pass.getText().toString();
                             status = "PENDING";
+                            admin="admin";
+                            message="MESSAGE";
+                            token="Device_token";
 
 
                             if (!validateForm()) {
@@ -503,8 +510,8 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
         } else {
 
+            Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status,password,lat,lng,admin,message,token);
 
-            Vehicle_User vehicle_user = new Vehicle_User(userID, names, mobilenos, emailds, addresss, vnos, vms, vmos, yors, rcimagess, dlicesenes, dpimages, status, password);
             databaseReference.child(userID).setValue(vehicle_user);
 
 

@@ -20,8 +20,11 @@ public class Vehicle_User {
     private String location;
     private double lat;
     private double lng;
+    private  String admin;
+    private String message;
+    private String tokens;
 
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, double lat, double lng) {
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password,double lat, double lng, String admin, String message, String token) {
         this.id = id;
         this.name = name;
         this.mobile_no = mobile_no;
@@ -38,9 +41,12 @@ public class Vehicle_User {
         this.password = password;
         this.lat = lat;
         this.lng = lng;
+        this.admin = admin;
+        this.message = message;
+        this.tokens = token;
     }
 
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, String location) {
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, String location, double lat, double lng, String admin) {
         this.id = id;
         this.name = name;
         this.mobile_no = mobile_no;
@@ -56,84 +62,40 @@ public class Vehicle_User {
         this.status = status;
         this.password = password;
         this.location = location;
+        this.lat = lat;
+        this.lng = lng;
+        this.admin = admin;
     }
 
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status) {
-        this.id = id;
-        this.name = name;
-        this.mobile_no = mobile_no;
-        this.emailid = emailid;
-        this.address = address;
-        this.vehicle_no = vehicle_no;
-        this.vehicle_make = vehicle_make;
-        this.vehicle_model = vehicle_model;
-        this.yor = yor;
-        this.rc_image_url = rc_image_url;
-        this.driver_license_image_url = driver_license_image_url;
-        this.dp_image_url = dp_image_url;
-        this.status = status;
-    }
-
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password) {
-        this.id = id;
-        this.name = name;
-        this.mobile_no = mobile_no;
-        this.emailid = emailid;
-        this.address = address;
-        this.vehicle_no = vehicle_no;
-        this.vehicle_make = vehicle_make;
-        this.vehicle_model = vehicle_model;
-        this.yor = yor;
-        this.rc_image_url = rc_image_url;
-        this.driver_license_image_url = driver_license_image_url;
-        this.dp_image_url = dp_image_url;
-        this.status = status;
-        this.password = password;
-    }
 
     public Vehicle_User(String dp_image_url) {
         this.dp_image_url = dp_image_url;
     }
 
-    public Vehicle_User(String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url) {
-        this.name = name;
-        this.mobile_no = mobile_no;
-        this.emailid = emailid;
-        this.address = address;
-        this.vehicle_no = vehicle_no;
-        this.vehicle_make = vehicle_make;
-        this.vehicle_model = vehicle_model;
-        this.yor = yor;
-        this.rc_image_url = rc_image_url;
-        this.driver_license_image_url = driver_license_image_url;
-        this.dp_image_url = dp_image_url;
+
+
+    public String getToken() {
+        return tokens;
     }
 
-    public Vehicle_User(String  id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url) {
-        this.id = id;
-        this.name = name;
-        this.mobile_no = mobile_no;
-        this.emailid = emailid;
-        this.address = address;
-        this.vehicle_no = vehicle_no;
-        this.vehicle_make = vehicle_make;
-        this.vehicle_model = vehicle_model;
-        this.yor = yor;
-        this.rc_image_url = rc_image_url;
-        this.driver_license_image_url = driver_license_image_url;
-        this.dp_image_url = dp_image_url;
+    public void setToken(String token) {
+        this.tokens = token;
     }
 
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor) {
-        this.id = id;
-        this.name = name;
-        this.mobile_no = mobile_no;
-        this.emailid = emailid;
-        this.address = address;
-        this.vehicle_no = vehicle_no;
-        this.vehicle_make = vehicle_make;
-        this.vehicle_model = vehicle_model;
-        this.yor = yor;
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(String admin) {
+        this.admin = admin;
     }
 
     public double getLat() {
