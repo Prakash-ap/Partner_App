@@ -180,13 +180,13 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("vehicle_users");
 
-        if(firebaseAuth.getCurrentUser() == null){
+      /*  if(firebaseAuth.getCurrentUser() == null){
             //closing this activity
             finish();
             //starting login activity
             startActivity(new Intent(this, SignInActivity.class));
         }
-
+*/
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override

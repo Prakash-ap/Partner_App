@@ -46,32 +46,36 @@
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"
             android:weightSum="1">
-        <Button
-            android:id="@+id/btn_register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:background="#AFA939"
-            android:text="Register"
-            android:textStyle="bold"
-            android:layout_weight=".5"
-            android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:background="#AFA939"
+                android:text="login"
+                android:textStyle="bold"
+                android:layout_weight=".5"
+                android:textColor="@android:color/black" />
+
             <TextView
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
                 android:background="#525252"/>
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:background="#AFA939"
-            android:text="login"
-            android:textStyle="bold"
-            android:layout_weight=".5"
-            android:textColor="@android:color/black" />
+
+
+            <Button
+                android:id="@+id/btn_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:background="#AFA939"
+                android:text="Register"
+                android:textStyle="bold"
+                android:layout_weight=".5"
+                android:textColor="@android:color/black" />
         </LinearLayout>
     </RelativeLayout>
 
