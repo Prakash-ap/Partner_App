@@ -125,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String STORAGE_PATH_UPLOADS = "uploads/";
     public static final String DATABASE_PATH_UPLOADS = "uploads";
     String location;
+    String group;
+
 
 
     @Override
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("vehicle_users");
+        group="notifications";
 
       /*  if(firebaseAuth.getCurrentUser() == null){
             //closing this activity
@@ -510,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
         } else {
 
-            Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status,password,lat,lng,admin,message,token);
+            Vehicle_User vehicle_user=new Vehicle_User(userID,names,mobilenos,emailds,addresss,vnos,vms,vmos,yors,rcimagess,dlicesenes,dpimages,status,password,lat,lng,admin,message,token,group);
 
             databaseReference.child(userID).setValue(vehicle_user);
 

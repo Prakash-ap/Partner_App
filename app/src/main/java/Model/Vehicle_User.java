@@ -23,8 +23,32 @@ public class Vehicle_User {
     private  String admin;
     private String message;
     private String tokens;
+    private String group;
 
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password,double lat, double lng, String admin, String message, String token) {
+    public Vehicle_User(String userID, String names, String mobilenos, String emailds, String addresss, String vnos, String vms, String vmos, String yors, String rcimagess, String dlicesenes, String dpimages, String status, String password, double lat, double lng, String admin, String message, String token, String group) {
+        this.id = userID;
+        this.name = names;
+        this.mobile_no = mobilenos;
+        this.emailid = emailds;
+        this.address = addresss;
+        this.vehicle_no = vnos;
+        this.vehicle_make = vms;
+        this.vehicle_model = vmos;
+        this.yor = yors;
+        this.rc_image_url = rcimagess;
+        this.driver_license_image_url = dlicesenes;
+        this.dp_image_url = dpimages;
+        this.status = status;
+        this.password = password;
+        this.lat = lat;
+        this.lng = lng;
+        this.admin = admin;
+        this.message = message;
+        this.tokens = token;
+        this.group = group;
+    }
+
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, double lat, double lng, String admin, String message, String token) {
         this.id = id;
         this.name = name;
         this.mobile_no = mobile_no;
@@ -68,9 +92,12 @@ public class Vehicle_User {
     }
 
 
+
+
     public Vehicle_User(String dp_image_url) {
         this.dp_image_url = dp_image_url;
     }
+
 
 
 
@@ -238,5 +265,21 @@ public class Vehicle_User {
 
     public void setDp_image_url(String dp_image_url) {
         this.dp_image_url = dp_image_url;
+    }
+
+    public String getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(String tokens) {
+        this.tokens = tokens;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }
