@@ -54,6 +54,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -67,12 +69,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import Model.Vehicle_User;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG ="MainActivity" ;
     ImageView driverimage;
     ImageButton dr_btn;
     private static final int Gallery_slection_code = 100;
@@ -348,7 +352,20 @@ public class MainActivity extends AppCompatActivity {
                             token="Device_token";
 
 
-                            if (!validateForm()) {
+
+                       /*     FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        Log.w(TAG, "onComplete: get Instance failed", task.getException());
+                                        return;
+                                    }
+
+                                   token = task.getResult().getToken();
+
+                                }
+                            });*/
+                                   if (!validateForm()) {
                                 return;
                             }
 

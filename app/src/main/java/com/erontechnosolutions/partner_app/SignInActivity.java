@@ -94,6 +94,7 @@ public class SignInActivity extends AppCompatActivity {
                     }else {
 
                           userID=mAuth.getCurrentUser().getUid();
+                            initFCM();
 
                             DatabaseReference reference=FirebaseDatabase.getInstance().getReference("vehicle_users");
 
@@ -121,6 +122,9 @@ public class SignInActivity extends AppCompatActivity {
                                     }
 
                                     FirebaseMessaging.getInstance().subscribeToTopic("notifications");
+
+
+
 
                                     FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                         @Override
@@ -243,4 +247,42 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void sendRegistrationToServer(final String token) {
+        Log.d(TAG, "sendRegistrationToServer: sending token to server: " + token);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("vehicle_users");
+        reference.orderByChild("status").equalTo("COMPLETED").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot s : dataSnapshot.getChildren()) {
+                    Vehicle_User vehicle_user = s.getValue(Vehicle_User.class);
+                    String userid = vehicle_user.getId();
+                    HashMap<String, Object> newhashmap = new HashMap<>();
+                    newhashmap.put("token", token);
+                    FirebaseDatabase.getInstance().getReference("vehicle_users").child(vehicle_user.getId()).updateChildren(newhashmap);
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+    }
+
+
+    private void initFCM(){
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG, "initFCM: token: " + token);
+        sendRegistrationToServer(token);
+
+    }
+
 }
