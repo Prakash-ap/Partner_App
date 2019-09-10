@@ -224,10 +224,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCurrLocationMarker.remove();
         }
 
-
-
-
-
         DatabaseReference reference= FirebaseDatabase.getInstance().getReference("vehicle_users");
 
         Query query = reference.child(userID);
@@ -238,10 +234,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 name=vehicle_user.getName();
                 phno=vehicle_user.getMobile_no();
                 vno=vehicle_user.getVehicle_no();
-
-
-
-
 
             }
 
@@ -393,7 +385,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Toast.makeText(getApplicationContext(), "Send Message", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getApplicationContext(), "Send Message", Toast.LENGTH_SHORT).show();
 
     }
 }

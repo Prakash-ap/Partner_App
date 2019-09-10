@@ -30,12 +30,19 @@
         -->
         <activity
             android:name=".MapsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps"></activity>
 
-        <activity android:name=".SignInActivity" />
+        <activity android:name=".SignInActivity"
+            android:screenOrientation="portrait"
+            />
 
-        <activity android:name=".MainActivity" />
-        <activity android:name=".WelcomeActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".WelcomeActivity"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
