@@ -25,6 +25,27 @@ public class Vehicle_User {
     private String tokens;
     private String group;
 
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, double lat, double lng, String admin, String tokens) {
+        this.id = id;
+        this.name = name;
+        this.mobile_no = mobile_no;
+        this.emailid = emailid;
+        this.address = address;
+        this.vehicle_no = vehicle_no;
+        this.vehicle_make = vehicle_make;
+        this.vehicle_model = vehicle_model;
+        this.yor = yor;
+        this.rc_image_url = rc_image_url;
+        this.driver_license_image_url = driver_license_image_url;
+        this.dp_image_url = dp_image_url;
+        this.status = status;
+        this.password = password;
+        this.lat = lat;
+        this.lng = lng;
+        this.admin = admin;
+        this.tokens = tokens;
+    }
+
     public Vehicle_User(String userID, String names, String mobilenos, String emailds, String addresss, String vnos, String vms, String vmos, String yors, String rcimagess, String dlicesenes, String dpimages, String status, String password, double lat, double lng, String admin, String message, String token, String group) {
         this.id = userID;
         this.name = names;
@@ -70,7 +91,7 @@ public class Vehicle_User {
         this.tokens = token;
     }
 
-    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, String location, double lat, double lng, String admin) {
+    public Vehicle_User(String id, String name, String mobile_no, String emailid, String address, String vehicle_no, String vehicle_make, String vehicle_model, String yor, String rc_image_url, String driver_license_image_url, String dp_image_url, String status, String password, double lat, double lng, String admin) {
         this.id = id;
         this.name = name;
         this.mobile_no = mobile_no;
@@ -85,7 +106,6 @@ public class Vehicle_User {
         this.dp_image_url = dp_image_url;
         this.status = status;
         this.password = password;
-        this.location = location;
         this.lat = lat;
         this.lng = lng;
         this.admin = admin;

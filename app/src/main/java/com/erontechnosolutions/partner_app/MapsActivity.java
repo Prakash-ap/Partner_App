@@ -59,14 +59,14 @@ import Model.Vehicle_User;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,GoogleMap.InfoWindowAdapter,GoogleMap.OnInfoWindowClickListener{
+        LocationListener,GoogleMap.InfoWindowAdapter {
 
-    private static final int PLAY_SERVICES_REQUEST =100 ;
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION =101 ;
+    private static final int PLAY_SERVICES_REQUEST = 100;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 101;
     private GoogleMap mMap;
-    ArrayList<String> permissions=new ArrayList<>();
-   // PermissionUtils permissionUtils;
-   GoogleApiClient mGoogleApiClient;
+    ArrayList<String> permissions = new ArrayList<>();
+    // PermissionUtils permissionUtils;
+    GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     Marker mCurrLocationMarker;
     Location mLastLocation;
@@ -91,46 +91,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        userID = firebaseAuth.getUid();
 
-
-
-        firebaseAuth=FirebaseAuth.getInstance();
-        userID=firebaseAuth.getUid();
-        /*Map<String,Marker> markerMapsActivity=new HashMap<String,Marker>();
-
-        ChildEventListener markerchild=new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                userID=dataSnapshot.getKey();
-                Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
-                double lat=vehicle_user.getLat();
-                double lng=vehicle_user.getLng();
-                LatLng location = new LatLng(lat, lng);
-
-                Marker marker = markerMapsActivity.get(key);
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        }*/
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -139,27 +102,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
 
-    }
-
-    public boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-            return false;
-        } else {
-            return true;
-        }
     }
 
 
@@ -171,7 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(this);
-        mMap.setOnInfoWindowClickListener(this);
+        //mMap.setOnInfoWindowClickListener(this);
 
 
         //Initialize Google Play Services
@@ -224,16 +166,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCurrLocationMarker.remove();
         }
 
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("vehicle_users");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("vehicle_users");
 
         Query query = reference.child(userID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Vehicle_User vehicle_user=dataSnapshot.getValue(Vehicle_User.class);
-                name=vehicle_user.getName();
-                phno=vehicle_user.getMobile_no();
-                vno=vehicle_user.getVehicle_no();
+                Vehicle_User vehicle_user = dataSnapshot.getValue(Vehicle_User.class);
+                name = vehicle_user.getName();
+                phno = vehicle_user.getMobile_no();
+                vno = vehicle_user.getVehicle_no();
 
             }
 
@@ -251,7 +193,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 //Showing Current Location Marker on Map
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        markerOptions=new MarkerOptions();
+        markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
        /* markerOptions.title("" + nam1 + "," + phnom + "," + veno
         );*/
@@ -265,19 +207,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         Location locations = locationManager.getLastKnownLocation(provider);
-        double lat=locations.getLatitude();
-        double lng=locations.getLongitude();
+        double lat = locations.getLatitude();
+        double lng = locations.getLongitude();
 
-        String latlngs= lat+ ","+lng;
+        String latlngs = lat + "," + lng;
 
 
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference("vehicle_users");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("vehicle_users");
         ref.child(userID).child("lat").setValue(lat);
         ref.child(userID).child("lng").setValue(lng);
 
 
-
-        List<String> providerList = locationManager.getAllProviders();
+        // List<String> providerList = locationManager.getAllProviders();
        /* if (null != locations && null != providerList && providerList.size() > 0) {
             double longitude = locations.getLongitude();
             double latitude = locations.getLatitude();
@@ -309,6 +250,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -316,15 +278,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
-
-
-
-
 
 
     @Override
@@ -363,10 +320,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // res/layout folder. You can provide your own
         View v = inflater.inflate(R.layout.markerinfo_layout, null);
 
-        TextView tit=v.findViewById(R.id.title);
-        TextView phnos=v.findViewById(R.id.phnomarker);
-        TextView vnos=v.findViewById(R.id.vnomarker);
-        Button btn=v.findViewById(R.id.btnmarker);
+        TextView tit = v.findViewById(R.id.title);
+        TextView phnos = v.findViewById(R.id.phnomarker);
+        TextView vnos = v.findViewById(R.id.vnomarker);
+        Button btn = v.findViewById(R.id.btnmarker);
 
         tit.setText(name);
         phnos.setText(phno);
@@ -381,11 +338,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return v;
     }
-
-
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-       // Toast.makeText(getApplicationContext(), "Send Message", Toast.LENGTH_SHORT).show();
-
-    }
 }
+
+

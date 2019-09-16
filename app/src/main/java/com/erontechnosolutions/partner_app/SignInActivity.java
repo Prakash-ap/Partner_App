@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +39,7 @@ public class SignInActivity extends AppCompatActivity {
     Button loginbtn;
     private FirebaseAuth mAuth;
     String userID;
+    private DatabaseReference muserdatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class SignInActivity extends AppCompatActivity {
         password = findViewById(R.id.pass_edt);
         loginbtn = findViewById(R.id.signin_btn);
         mAuth = FirebaseAuth.getInstance();
+        muserdatabase=FirebaseDatabase.getInstance().getReference().child("vehicle_users");
 
 
 
@@ -94,7 +97,7 @@ public class SignInActivity extends AppCompatActivity {
                     }else {
 
                           userID=mAuth.getCurrentUser().getUid();
-                            initFCM();
+                         //   initFCM();
 
                             DatabaseReference reference=FirebaseDatabase.getInstance().getReference("vehicle_users");
 
@@ -111,9 +114,22 @@ public class SignInActivity extends AppCompatActivity {
 
                                     if(stat.equals("COMPLETED")){
 
+                                        String currentuserId=mAuth.getCurrentUser().getUid();
+                                        String token=FirebaseInstanceId.getInstance().getToken();
 
-                                        startActivity(new Intent(SignInActivity.this, MapsActivity.class));
-                                        finish();
+                                        muserdatabase.child(currentuserId).child("token").setValue(token).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+
+                                                startActivity(new Intent(SignInActivity.this, MapsActivity.class));
+                                                finish();
+
+                                            }
+                                        });
+
+
+
+
 
                                     }else {
                                         Toast.makeText(SignInActivity.this, "Your Account is on verification!!!", Toast.LENGTH_SHORT).show();
@@ -121,12 +137,12 @@ public class SignInActivity extends AppCompatActivity {
 
                                     }
 
-                                    FirebaseMessaging.getInstance().subscribeToTopic("notifications");
+                                  //  FirebaseMessaging.getInstance().subscribeToTopic("notifications");
 
 
 
 
-                                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                             /*       FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                         @Override
                                         public void onComplete(@NonNull Task<InstanceIdResult> task) {
                                             if(!task.isSuccessful()){
@@ -137,17 +153,17 @@ public class SignInActivity extends AppCompatActivity {
                                             String token=task.getResult().getToken();
                                             HashMap<String, Object> result = new HashMap<>();
                                             result.put("token", token);
-                                            FirebaseDatabase.getInstance().getReference().child("vehicle_users").child(vehicle_user.getId()).updateChildren(result);
+                                            FirebaseDatabase.getInstance().getReference().child("vehicle_users").child(userID).updateChildren(result);
 
 
-                                           /* DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("vehicle_users");
-                                            reference1.child("token").setValue(token);*/
+                                           *//* DatabaseReference reference1=FirebaseDatabase.getInstance().getReference("vehicle_users");
+                                            reference1.child("token").setValue(token);*//*
 
                                             String msg=getString(R.string.fcm_token, token);
                                             Log.d(TAG, "onComplete: "+msg);
                                             Toast.makeText(SignInActivity.this, msg, Toast.LENGTH_SHORT).show();
                                         }
-                                    });
+                                    });*/
 
                                 }
 
@@ -259,7 +275,7 @@ public class SignInActivity extends AppCompatActivity {
                     Vehicle_User vehicle_user = s.getValue(Vehicle_User.class);
                     String userid = vehicle_user.getId();
                     HashMap<String, Object> newhashmap = new HashMap<>();
-                    newhashmap.put("token", token);
+                    newhashmap.put("token", userid);
                     FirebaseDatabase.getInstance().getReference("vehicle_users").child(vehicle_user.getId()).updateChildren(newhashmap);
 
 
@@ -283,7 +299,7 @@ public class SignInActivity extends AppCompatActivity {
     private void initFCM(){
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "initFCM: token: " + token);
-        sendRegistrationToServer(token);
+      //  sendRegistrationToServer(token);
 
     }
 
